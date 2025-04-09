@@ -1,0 +1,16 @@
+.update-container {
+  margin:auto;
+  max-width: 400px;
+}
+
+.update-input {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.update-button {
+  padding: 10px 20px;
+  background-color: blue;
+  color: white;
+}
