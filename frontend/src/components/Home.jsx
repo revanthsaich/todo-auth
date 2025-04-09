@@ -9,21 +9,27 @@ const Home = () => {
   const [task, setTask] = useState('');
   const [todos, setTodos] = useState([]);
 
+  const userId = localStorage.getItem('userId');
+
   useEffect(() => {
-    axios.get('http://localhost:5000/api/todos')
-      .then((response) => {
-        setTodos(response.data); 
-      })
-      .catch((error) => {
-        console.error('Error', error);
-      });
-  }, []);
+    if (userId) {
+      axios
+        .get(`http://localhost:5000/api/todos/user/${userId}`)
+        .then((response) => {
+          setTodos(response.data);
+        })
+        .catch((error) => {
+          console.error('Error', error);
+        });
+    }
+  }, [userId]);
 
   const handleAdd = () => {
-    const newTask = { text: task };
-    axios.post('http://localhost:5000/api/todos', newTask) 
+    const newTask = { text: task, userId };
+    axios
+      .post('http://localhost:5000/api/todos', newTask)
       .then((res) => {
-        setTodos([...todos, newTask]); 
+        setTodos([...todos, res.data]);
         setTask('');
       })
       .catch((err) => {
@@ -34,8 +40,18 @@ const Home = () => {
   return (
     <div className="container">
       <div className="top-right-buttons">
-        <button onClick={() => navigate('/login')}>Login</button>
-        <button onClick={() => navigate('/signin')}>Sign Up</button>
+        {userId ? (
+          <button onClick={() => {
+            localStorage.removeItem('userId');
+            navigate('/login');
+          }}>Logout</button>
+        ) : (
+          <>
+            <button onClick={() => navigate('/login')}>Login</button>
+            <button onClick={() => navigate('/signin')}>Sign Up</button>
+          </>
+        )}
+
       </div>
       <h1 className="title">Todo List</h1>
       <div className="input-container">
@@ -52,7 +68,7 @@ const Home = () => {
       </div>
 
       <div className="todo-container">
-        {todos.map((todo, index) => (
+        {todos.map((todo) => (
           <Todo key={todo._id} id={todo._id} text={todo.text} />
         ))}
       </div>
