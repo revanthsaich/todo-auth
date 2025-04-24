@@ -10,31 +10,47 @@ const Home = () => {
 
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (userId) {
+    if (userId && token) {
       axios
-        .get(`http://localhost:5000/api/todos/user/${userId}`)
+        .get(`http://localhost:5000/api/todos/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((response) => {
           setTodos(response.data);
         })
         .catch((error) => {
-          console.error('Error', error);
+          console.error('Error fetching todos', error);
         });
     }
-  }, [userId]);
+  }, [userId, token]);
 
   const handleAdd = () => {
+    if (!token) return;
+
     const newTask = { text: task, userId };
     axios
-      .post('http://localhost:5000/api/todos', newTask)
+      .post('http://localhost:5000/api/todos', newTask, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setTodos([...todos, res.data]);
         setTask('');
       })
       .catch((err) => {
-        console.error('Failed', err);
+        console.error('Failed to add todo', err);
       });
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
   };
 
   return (
@@ -43,11 +59,7 @@ const Home = () => {
         {userId ? (
           <div>
             <p>{username}</p>
-            <button onClick={() => {
-              localStorage.removeItem('userId');
-              localStorage.removeItem('username');
-              navigate('/login');
-            }}>Logout</button>
+            <button onClick={handleLogout}>Logout</button>
           </div>
         ) : (
           <>
@@ -55,8 +67,8 @@ const Home = () => {
             <button onClick={() => navigate('/signin')}>Sign Up</button>
           </>
         )}
-
       </div>
+
       <h1>Todo List</h1>
       <div>
         <input
@@ -65,9 +77,7 @@ const Home = () => {
           value={task}
           onChange={(e) => setTask(e.target.value)}
         />
-        <button onClick={handleAdd}>
-          Add
-        </button>
+        <button onClick={handleAdd}>Add</button>
       </div>
 
       <div>

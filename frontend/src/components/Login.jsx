@@ -11,6 +11,7 @@ const Login = () => {
     axios
       .post('http://localhost:5000/api/users/login', { username, password })
       .then((res) => {
+        localStorage.setItem('token', res.data.token);       // ✅ Save token
         localStorage.setItem('userId', res.data.userId);
         localStorage.setItem('username', username);
         navigate('/');

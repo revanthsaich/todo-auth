@@ -11,6 +11,7 @@ const SignUp = () => {
     axios
       .post('http://localhost:5000/api/users/signup', { username, password })
       .then((res) => {
+        localStorage.setItem('token', res.data.token);       // ✅ Save token
         localStorage.setItem('userId', res.data.userId);
         localStorage.setItem('username', username);
         navigate('/');
@@ -19,6 +20,7 @@ const SignUp = () => {
         console.error('Signup failed', err);
       });
   };
+  
 
   return (
     <div>

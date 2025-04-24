@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Todo = require('../models/Todo');
+const auth = require('../middleware/authMiddleware');
+
+router.use(auth); 
 
 router.get('/', async (req, res) => {
   try {

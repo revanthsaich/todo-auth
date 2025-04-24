@@ -4,13 +4,18 @@ import { useNavigate } from 'react-router-dom';
 
 const Todo = ({ id, text }) => {
   const navigate = useNavigate();
-  
+  const token = localStorage.getItem('token');
+
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/todos/${id}`);
+      await axios.delete(`http://localhost:5000/api/todos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       window.location.reload();
     } catch (err) {
-      console.error('error deleting', err);
+      console.error('Error deleting todo', err);
     }
   };
 

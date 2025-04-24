@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const SECRET = process.env.JWT_SECRET;
 router.post('/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -14,7 +16,10 @@ router.post('/signup', async (req, res) => {
     const user = new User({ username, password: hash_pw });
     await user.save();
 
-    res.status(201).json({ message: 'registered' , userId: user._id} );
+    const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1d' });
+
+    res.json({ message: 'successful', token, userId: user._id, username: user.username });
+
   } catch (err) {
     res.status(500).json({ message: 'error' });
   }
@@ -23,14 +28,15 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: 'Invalid' });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid' });
 
-    res.json({ message: 'successful' , userId: user._id });
+    const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1d' });
+
+    res.json({ message: 'successful', token, userId: user._id, username: user.username });
   } catch (err) {
     res.status(500).json({ message: 'error' });
   }
