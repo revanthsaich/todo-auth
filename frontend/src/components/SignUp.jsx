@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './Auth.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +12,7 @@ const SignUp = () => {
       .post('http://localhost:5000/api/users/signup', { username, password })
       .then((res) => {
         localStorage.setItem('userId', res.data.userId);
+        localStorage.setItem('username', username);
         navigate('/');
       })
       .catch((err) => {
@@ -21,7 +21,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="auth-box">
+    <div>
       <h2>Sign Up</h2>
       <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
       <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './Home.css';
 import Todo from './Todo';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,6 +9,7 @@ const Home = () => {
   const [todos, setTodos] = useState([]);
 
   const userId = localStorage.getItem('userId');
+  const username = localStorage.getItem('username');
 
   useEffect(() => {
     if (userId) {
@@ -38,13 +38,17 @@ const Home = () => {
   };
 
   return (
-    <div className="container">
-      <div className="top-right-buttons">
+    <div>
+      <div>
         {userId ? (
-          <button onClick={() => {
-            localStorage.removeItem('userId');
-            navigate('/login');
-          }}>Logout</button>
+          <div>
+            <p>{username}</p>
+            <button onClick={() => {
+              localStorage.removeItem('userId');
+              localStorage.removeItem('username');
+              navigate('/login');
+            }}>Logout</button>
+          </div>
         ) : (
           <>
             <button onClick={() => navigate('/login')}>Login</button>
@@ -53,21 +57,20 @@ const Home = () => {
         )}
 
       </div>
-      <h1 className="title">Todo List</h1>
-      <div className="input-container">
+      <h1>Todo List</h1>
+      <div>
         <input
           type="text"
           placeholder="Enter a task"
           value={task}
           onChange={(e) => setTask(e.target.value)}
-          className="todo-input"
         />
-        <button onClick={handleAdd} className="add">
+        <button onClick={handleAdd}>
           Add
         </button>
       </div>
 
-      <div className="todo-container">
+      <div>
         {todos.map((todo) => (
           <Todo key={todo._id} id={todo._id} text={todo.text} />
         ))}
